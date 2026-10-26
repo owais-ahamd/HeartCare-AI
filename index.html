@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Heart Disease Prediction System</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwind.min.css') }}">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+
+<body class="bg-gray-100">
+
+
+    <!-- ================= NAVBAR ================= -->
+    <nav class="bg-blue-800 text-white">
+
+        <div class="max-w-6xl mx-auto px-6 py-4">
+
+            <div class="flex justify-between items-center">
+
+                <h1 class="text-xl font-bold">
+                    HeartCare AI
+                </h1>
+
+                <span class="text-sm">
+                    ML Prediction System
+                </span>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- ================= HERO ================= -->
+    <section class="bg-blue-700 text-white">
+
+        <div class="max-w-6xl mx-auto px-6 py-14 text-center">
+
+            <h2 class="text-4xl font-bold mb-4">
+                Heart Disease Prediction System
+            </h2>
+
+            <p class="text-lg">
+                Machine Learning Based Health Risk Prediction
+            </p>
+
+            <p class="text-sm mt-3 opacity-90">
+                Enter the required health information below
+            </p>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ================= MAIN FORM ================= -->
+    <div class="max-w-5xl mx-auto px-6 py-10">
+
+        <div class="bg-white rounded-xl shadow-lg p-8">
+
+
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">
+                Patient Information
+            </h2>
+
+
+
+            <!-- ================================================= -->
+            <!-- PREDICTION RESULT SHOWS HERE AFTER FORM SUBMISSION -->
+            <!-- ================================================= -->
+
+            {% if prediction %}
+
+            <div id="prediction-result"
+                class="mb-8 border-2 border-blue-500 bg-blue-50 rounded-xl p-6 shadow-lg text-center">
+
+
+                <div class="mb-4">
+
+                    <span class="inline-block bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-full">
+                        Prediction Completed
+                    </span>
+
+                </div>
+
+
+                <p class="text-gray-600 font-medium">
+                    Patient Prediction Result
+                </p>
+
+
+                <h2 class="text-3xl md:text-4xl font-bold text-blue-800 mt-3">
+                    {{ prediction }}
+                </h2>
+
+
+
+                {% if probability is not none %}
+
+                <div class="mt-5">
+
+                    <p class="text-gray-600">
+                        Prediction Probability
+                    </p>
+
+                    <p class="text-3xl font-bold text-blue-700 mt-1">
+                        {{ probability }}%
+                    </p>
+
+                </div>
+
+                {% endif %}
+
+
+
+                <div class="mt-6 bg-white border border-gray-200 rounded-lg p-4">
+
+                    <p class="text-sm text-gray-700">
+                        This result is based on the health information
+                        entered by the patient.
+                    </p>
+
+                    <p class="text-xs text-red-600 mt-3 font-medium">
+                        Important: This machine-learning prediction is
+                        for educational purposes only and is not a
+                        medical diagnosis.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+            {% endif %}
+
+
+
+            <!-- ================= FORM ================= -->
+
+            <form action="{{ url_for('predict') }}" method="POST">
+
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+
+                    <!-- ================= AGE ================= -->
+
+                    <div>
+
+                        <label class="block font-medium mb-2">
+                            Age
+                        </label>
+
+                        <input type="number" name="age" required min="1" max="120" placeholder="Enter age"
+                            class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+
+                    </div>
+
+
+
+                    <!-- ================= SEX ================= -->
+
+                    <div>
+
+                        <label class="block font-medium mb-2">
+                            Sex
+                        </label>
+
+                        <select name="sex" required
+                            class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+
+                            <option value="">
+                                Select
+                            </option>
+
+                            <option value="1">
+                                Male
+                            </option>
+
+                            <option value="0">
+                                Female
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <!-- ================= CHEST PAIN ================= -->
+
+                    <div>
+
+                        <label class="block font-medium mb-2">
+                            Chest Pain Type
+                        </label>
+
+                        <select name="cp" required
+                            class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+
+                            <option value="">
+                                Select the closest description
+                            </option>
+
+                            <option value="0">
+                                Strong pressure/tightness, usually during activity
+                            </option>
+
+                            <option value="1">
+                                Mild or unusual chest discomfort
+                            </option>
+
+                            <option value="2">
+                                Sharp or brief chest pain
+                            </option>
+
+                            <option value="3">
+                                No chest pain or symptoms
+                            </option>
+
+                        </select>
+
+
+                        <div class="mt-2 bg-gray-50 rounded-lg p-3">
+
+                            <p class="text-xs text-gray-600">
+                                <strong>Simple Guide:</strong>
+                            </p>
+
+                            <p class="text-xs text-gray-500 mt-1">
+                                Strong pressure/tightness = heavy or squeezing feeling.
+                            </p>
+
+                            <p class="text-xs text-gray-500">
+                                Mild discomfort = light or unusual pain.
+                            </p>
+
+                            <p class="text-xs text-gray-500">
+                                Sharp pain = sudden or brief pain.
+                            </p>
+
+                            <p class="text-xs text-gray-500">
+                                No symptoms = no chest pain.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- ================= BLOOD PRESSURE ================= -->
+
+                    <div>
+
+                        <label class="block font-medium mb-2">
+                            Resting Blood Pressure
+                            <span class="text-sm text-gray-500">
+                                (Upper/Systolic)
+                            </span>
+                        </label>
+
+                        <input type="number" name="trestbps" required placeholder="e.g. 120"
+                            class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+
+
+                        <div class="mt-2 bg-gray-50 rounded-lg p-3">
+
+                            <p class="text-xs text-green-700 font-medium">
+                                Normal: Below 120 mmHg
+                            </p>
+
+                            <p class="text-xs text-yellow-700 mt-1">
+                                Elevated: 120–129 mmHg
+                            </p>
+
+                            <p class="text-xs text-red-700 mt-1">
+                                High / Abnormal: 130 mmHg or above
+                            </p>
+
+                            <p class="text-xs text-gray-500 mt-2">
+                                Enter the upper number of your blood pressure reading.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- ================= CHOLESTEROL ================= -->
+
+                    <div>
+
+                        <label class="block font-medium mb-2">
+                            Total Cholesterol (mg/dL)
+                        </label>
+
+                        <input type="number" name="chol" required placeholder="e.g. 200"
+                            class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+
+
+                        <div class="mt-2 bg-gray-50 rounded-lg p-3">
+
+                            <p class="text-xs text-green-700 font-medium">
+                                Desirable: Below 200 mg/dL
+                            </p>
+
+                            <p class="text-xs text-yellow-700 mt-1">
+                                Borderline High: 200–239 mg/dL
+                            </p>
+
+                            <p class="text-xs text-red-700 mt-1">
+                                High: 240 mg/dL or above
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- ================= FASTING BLOOD SUGAR ================= -->
+
+                    <div>
+
+                        <label class="block font-medium mb-2">
+                            Fasting Blood Sugar
+                        </label>
+
+                        <select name="fbs" required
+                            class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+
+                            <option value="">
+                                Select
+                            </option>
+
+                            <option value="0">
+                                120 mg/dL or less
+                            </option>
+
+                            <option value="1">
+                                Greater than 120 mg/dL
+                            </option>
+
+                        </select>
+
+
+                        <div class="mt-2 bg-gray-50 rounded-lg p-3">
+
+                            <p class="text-xs text-green-700 font-medium">
+                                Typical normal fasting glucose: about 70–99 mg/dL
+                            </p>
+
+                            <p class="text-xs text-red-700 mt-1">
+                                Higher readings may require medical assessment.
+                            </p>
+
+                            <p class="text-xs text-gray-500 mt-2">
+                                This ML model uses the original 120 mg/dL cutoff.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- ================= RESTING ECG ================= -->
+
+                    <div>
+
+                        <label class="block font-medium mb-2">
+                            Resting ECG
+                        </label>
+
+                        <select name="restecg" required
+                            class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+
+                            <option value="">
+                                Select
+                            </option>
+
+                            <option value="0">
+                                Normal
+                            </option>
+
+                            <option value="1">
+                                ST-T Wave Abnormality
+                            </option>
+
+                            <option value="2">
+                                Left Ventricular Hypertrophy
+                            </option>
+
+                        </select>
+
+
+                        <div class="mt-2 bg-gray-50 rounded-lg p-3">
+
+                            <p class="text-xs text-green-700 font-medium">
+                                Normal: Normal ECG result
+                            </p>
+
+                            <p class="text-xs text-red-700 mt-1">
+                                Abnormal: ST-T changes or ventricular hypertrophy
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- ================= MAX HEART RATE ================= -->
+
+                    <div>
+
+                        <label class="block font-medium mb-2">
+                            Maximum Heart Rate
+                        </label>
+
+                        <input type="number" name="thalach" required placeholder="e.g. 150"
+                            class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+
+
+                        <div class="mt-2 bg-gray-50 rounded-lg p-3">
+
+                            <p class="text-xs text-gray-600">
+                                Maximum heart rate varies with age and fitness.
+                            </p>
+
+                            <p class="text-xs text-gray-500 mt-1">
+                                A rough estimate sometimes used is:
+                            </p>
+
+                            <p class="text-xs text-blue-700 font-medium mt-1">
+                                220 − Age
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- ================= EXERCISE ANGINA ================= -->
+
+                    <div>
+
+                        <label class="block font-medium mb-2">
+                            Chest Pain During Exercise
+                        </label>
+
+                        <select name="exang" required
+                            class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+
+                            <option value="">
+                                Select
+                            </option>
+
+                            <option value="0">
+                                No — No chest pain during exercise
+                            </option>
+
+                            <option value="1">
+                                Yes — Chest pain/pressure during exercise
+                            </option>
+
+                        </select>
+
+
+                        <div class="mt-2 bg-gray-50 rounded-lg p-3">
+
+                            <p class="text-xs text-green-700 font-medium">
+                                No: No exercise-induced chest pain
+                            </p>
+
+                            <p class="text-xs text-red-700 mt-1">
+                                Yes: Chest pain appears during exercise
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- ================= OLDPEAK ================= -->
+
+                    <div>
+
+                        <label class="block font-medium mb-2">
+                            ST Depression After Exercise (Oldpeak)
+                        </label>
+
+                        <input type="number" name="oldpeak" step="0.1" required placeholder="e.g. 1.5"
+                            class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+
+
+                        <div class="mt-2 bg-gray-50 rounded-lg p-3">
+
+                            <p class="text-xs text-green-700 font-medium">
+                                Around 0: No ST depression
+                            </p>
+
+                            <p class="text-xs text-red-700 mt-1">
+                                Higher positive values indicate more ST depression.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- ================= SLOPE ================= -->
+
+                    <div>
+
+                        <label class="block font-medium mb-2">
+                            Exercise ECG Slope
+                        </label>
+
+                        <select name="slope" required
+                            class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+
+                            <option value="">
+                                Select
+                            </option>
+
+                            <option value="0">
+                                Upsloping
+                            </option>
+
+                            <option value="1">
+                                Flat
+                            </option>
+
+                            <option value="2">
+                                Downsloping
+                            </option>
+
+                        </select>
+
+
+                        <div class="mt-2 bg-gray-50 rounded-lg p-3">
+
+                            <p class="text-xs text-gray-600">
+                                Upsloping, flat and downsloping describe the ECG
+                                pattern during exercise.
+                            </p>
+
+                            <p class="text-xs text-gray-500 mt-1">
+                                Clinical interpretation should be based on the complete ECG.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- ================= MAJOR VESSELS ================= -->
+
+                    <div>
+
+                        <label class="block font-medium mb-2">
+                            Number of Major Vessels
+                        </label>
+
+                        <select name="ca" required
+                            class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+
+                            <option value="">
+                                Select from medical report
+                            </option>
+
+                            <option value="0">
+                                0
+                            </option>
+
+                            <option value="1">
+                                1
+                            </option>
+
+                            <option value="2">
+                                2
+                            </option>
+
+                            <option value="3">
+                                3
+                            </option>
+
+                        </select>
+
+
+                        <p class="text-xs text-gray-500 mt-2">
+                            Enter this value according to the patient's medical report.
+                            Do not guess this value.
+                        </p>
+
+                    </div>
+
+
+
+                    <!-- ================= THAL ================= -->
+
+                    <div>
+
+                        <label class="block font-medium mb-2">
+                            Thal Test Result
+                        </label>
+
+                        <select name="thal" required
+                            class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+
+                            <option value="">
+                                Select from report
+                            </option>
+
+                            <option value="0">
+                                Normal
+                            </option>
+
+                            <option value="1">
+                                Fixed Defect
+                            </option>
+
+                            <option value="2">
+                                Reversible Defect
+                            </option>
+
+                        </select>
+
+
+                        <div class="mt-2 bg-gray-50 rounded-lg p-3">
+
+                            <p class="text-xs text-green-700 font-medium">
+                                Normal: No reported defect
+                            </p>
+
+                            <p class="text-xs text-red-700 mt-1">
+                                Abnormal: Fixed or reversible defect
+                            </p>
+
+                            <p class="text-xs text-gray-500 mt-2">
+                                Select the result written in the medical report.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- ================= REFERENCE INFORMATION ================= -->
+
+                <div class="mt-7 bg-blue-50 border border-blue-200 rounded-lg p-4">
+
+                    <p class="text-sm text-gray-700">
+
+                        <strong>Patient Guide:</strong>
+
+                        The normal and abnormal information shown above is provided
+                        only as a simple reference.
+
+                        Medical values can vary according to age, health condition,
+                        medications, test method and other factors.
+
+                    </p>
+
+                </div>
+
+
+
+                <!-- ================= SUBMIT BUTTON ================= -->
+
+                <div class="mt-8">
+
+                    <button type="submit" class="w-full bg-blue-700 hover:bg-blue-800
+                               transition duration-200
+                               text-white font-bold py-4 rounded-lg shadow">
+
+                        Predict Heart Disease
+
+                    </button>
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer class="bg-gray-900 text-white text-center py-6">
+
+        <p>
+            Heart Disease Prediction System
+        </p>
+
+        <p class="text-sm text-gray-400 mt-2">
+            Machine Learning Web Application
+        </p>
+
+    </footer>
+
+
+
+    <!-- ================================================= -->
+    <!-- AUTO SCROLL TO PREDICTION RESULT AFTER SUBMISSION -->
+    <!-- ================================================= -->
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const resultBox =
+                document.getElementById("prediction-result");
+
+            if (resultBox) {
+
+                setTimeout(function () {
+
+                    resultBox.scrollIntoView({
+                        behavior: "smooth",
+                        block: "center"
+                    });
+
+                }, 300);
+
+            }
+
+        });
+
+    </script>
+
+
+</body>
+
+</html>
